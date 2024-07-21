@@ -15,19 +15,28 @@ ob_image = cv2.resize(ob_image, (678, 678))
 bg2_image = cv2.imread("./image/NewBackground.jpg", 1)
 bg2_image = cv2.resize(bg2_image, (678, 678))
 def show_img(img, title = ""):
-    plt.imshow(difference_single_channel, cmap='gray')
+    plt.imshow(img, cmap='gray')
     plt.colorbar()
     plt.title(title)
     plt.show()
+
 def compute_difference(bg_img, input_img):
-    difference_single_channel = np.abs(bg_img - input_img)
+    difference_three_channel = cv2.absdiff(bg_img, input_img)
+    #tính tổng dọc theo trục thứ ba của mảng sau đó tính tb
+    difference_single_channel = np.sum(difference_three_channel, axis = 2)/3.0
+    difference_single_channel = difference_single_channel.astype('uint8')
     return difference_single_channel
 difference_single_channel = compute_difference ( bg1_image , ob_image )
-#show_img(difference_single_channel)
+show_img(difference_single_channel)
 
-def compute_binary_mask(difference_single_channel, threshold = 0):
-    difference_binary = (difference_single_channel > threshold).astype(np.uint8)
+#Convert to binary image
+def compute_binary_mask(difference_single_channel, threshold=15):
+    # Tạo một mảng nhị phân
+    difference_binary = np.where(difference_single_channel >= threshold, 255, 0)
+    # Chuyển mảng nhị phân thành mảng 3D
+    difference_binary = np.stack((difference_binary,)*3, axis=-1)
     return difference_binary
+
 binary_mask = compute_binary_mask(difference_single_channel)
 show_img(binary_mask)
 
