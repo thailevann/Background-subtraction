@@ -1,4 +1,4 @@
-# ** Background subtraction ** 
+# **Background subtraction** 
 
 Use background subtraction techniques to extract the foreground (desired object) and paste it onto a new background.
 
